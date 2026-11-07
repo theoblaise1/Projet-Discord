@@ -1,0 +1,18 @@
+twig:
+    file_name_pattern: '*.twig'
+
+    # Thème de formulaire de l'application (champs, aides et erreurs façon Discord)
+    form_themes: ['form/theme.html.twig']
+
+    # Les dates sont affichées à l'heure de Paris, quel que soit le réglage
+    # "date.timezone" du php.ini de la machine.
+    date:
+        timezone: Europe/Paris
+        format: 'd/m/Y H:i'
+
+    globals:
+        app_name: Symcord
+
+when@test:
+    twig:
+        strict_variables: true

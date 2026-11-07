@@ -1,0 +1,29 @@
+{#
+    Liste de messages (affichage initial d'un salon et fragments chargés en AJAX).
+
+    Variables :
+      - messages : messages à afficher, du plus ancien au plus récent
+      - previous : message affiché juste avant (ou null), pour savoir s'il faut
+                   regrouper le premier message avec lui, comme sur Discord
+#}
+{% set months = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'] %}
+
+{% for message in messages %}
+    {% set day = message.createdAt|date('Y-m-d') %}
+    {% set new_day = previous is null or previous.createdAt|date('Y-m-d') != day %}
+
+    {# Deux messages consécutifs du même auteur, à moins de 7 minutes d'intervalle, sont regroupés #}
+    {% set grouped = not new_day
+        and previous.author.id == message.author.id
+        and (message.createdAt.timestamp - previous.createdAt.timestamp) < 420 %}
+
+    {% if new_day %}
+        <li class="day-divider" data-day="{{ day }}" role="separator">
+            <span>{{ message.createdAt|date('j') }} {{ months[message.createdAt|date('n') - 1] }} {{ message.createdAt|date('Y') }}</span>
+        </li>
+    {% endif %}
+
+    {{ include('message/_message.html.twig', {message: message, grouped: grouped}) }}
+
+    {% set previous = message %}
+{% endfor %}

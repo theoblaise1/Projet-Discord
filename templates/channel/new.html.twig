@@ -1,0 +1,19 @@
+{% extends 'layout/app.html.twig' %}
+
+{% block title %}Créer un salon | {{ app_name }}{% endblock %}
+
+{% block main %}
+    {{ include('partials/_main_header.html.twig', {title: 'Créer un salon', icon: 'plus'}) }}
+
+    <div class="page page--centered">
+        <section class="panel">
+            <h2 class="panel__title">Créer un salon textuel</h2>
+            <p class="panel__subtitle">Les membres pourront y échanger des messages, des idées et des liens.</p>
+
+            {{ include('channel/_form.html.twig', {
+                button_label: 'Créer le salon',
+                cancel_url: path('app_home'),
+            }) }}
+        </section>
+    </div>
+{% endblock %}

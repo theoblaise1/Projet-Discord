@@ -1,0 +1,39 @@
+{% extends 'layout/app.html.twig' %}
+{% import 'partials/_icons.html.twig' as ui %}
+
+{% set current_channel = channel %}
+
+{% block title %}Modifier #{{ channel.name }} | {{ app_name }}{% endblock %}
+
+{% block main %}
+    {{ include('partials/_main_header.html.twig', {title: channel.name, topic: 'Paramètres du salon'}) }}
+
+    <div class="page page--centered">
+        <section class="panel">
+            <h2 class="panel__title">Modifier le salon</h2>
+            <p class="panel__subtitle">
+                Créé par {{ channel.owner.username }} le {{ channel.createdAt|date('d/m/Y à H:i') }}.
+            </p>
+
+            {{ include('channel/_form.html.twig', {
+                button_label: 'Enregistrer les modifications',
+                cancel_url: path('app_channel_show', {id: channel.id}),
+            }) }}
+        </section>
+
+        {% if is_granted('CHANNEL_DELETE', channel) %}
+            <section class="panel panel--danger">
+                <h2 class="panel__title">Supprimer le salon</h2>
+                <p class="panel__subtitle">
+                    Cette action est définitive : le salon et tous ses messages seront supprimés.
+                </p>
+
+                <form method="post" action="{{ path('app_channel_delete', {id: channel.id}) }}"
+                      data-confirm="Supprimer définitivement le salon #{{ channel.name }} et tous ses messages ?">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete-channel-' ~ channel.id) }}">
+                    <button type="submit" class="btn btn--danger">{{ ui.icon('trash', 18) }} Supprimer le salon</button>
+                </form>
+            </section>
+        {% endif %}
+    </div>
+{% endblock %}

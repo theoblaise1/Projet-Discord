@@ -1,0 +1,48 @@
+{% extends 'layout/app.html.twig' %}
+{% import 'partials/_icons.html.twig' as ui %}
+
+{% block title %}Accueil | {{ app_name }}{% endblock %}
+
+{% block main %}
+    {{ include('partials/_main_header.html.twig', {title: 'Accueil', icon: 'home'}) }}
+
+    <div class="page">
+        <section class="hero">
+            <h2 class="hero__title">Bienvenue, {{ app.user.username }} !</h2>
+            <p class="hero__text">
+                Choisis un salon pour discuter avec les autres membres, ou crée le tien.
+            </p>
+            <ul class="hero__stats">
+                <li>{{ ui.icon('hash', 16) }} {{ channels|length }} salon{{ channels|length > 1 ? 's' }}</li>
+                <li>{{ ui.icon('users', 16) }} {{ member_count }} membre{{ member_count > 1 ? 's' }}</li>
+            </ul>
+            <a href="{{ path('app_channel_new') }}" class="btn btn--primary">{{ ui.icon('plus', 18) }} Créer un salon</a>
+        </section>
+
+        <section class="page__section">
+            <h2 class="page__section-title">Salons textuels</h2>
+
+            {% if channels is empty %}
+                <div class="empty-state">
+                    <span class="empty-state__icon">{{ ui.icon('chat', 32) }}</span>
+                    <p>Il n'y a encore aucun salon. Lance la discussion en créant le premier !</p>
+                </div>
+            {% else %}
+                <ul class="channel-cards">
+                    {% for channel in channels %}
+                        {% set count = message_counts[channel.id] ?? 0 %}
+                        <li class="channel-card">
+                            <a href="{{ path('app_channel_show', {id: channel.id}) }}" class="channel-card__link">
+                                <span class="channel-card__name">{{ ui.icon('hash', 18) }} {{ channel.name }}</span>
+                                <span class="channel-card__topic">{{ channel.description ?? 'Aucun sujet défini.' }}</span>
+                                <span class="channel-card__meta">
+                                    {{ count }} message{{ count > 1 ? 's' }} · créé par {{ channel.owner.username }}
+                                </span>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </section>
+    </div>
+{% endblock %}

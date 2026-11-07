@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="color-scheme" content="dark">
+        <title>{% block title %}{{ app_name }}{% endblock %}</title>
+        <link rel="icon" href="{{ asset('images/logo.svg') }}" type="image/svg+xml">
+
+        {# Fichiers statiques de public/ : aucun build (Node.js, Webpack…) n'est nécessaire #}
+        {% block stylesheets %}
+            <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+        {% endblock %}
+
+        {% block javascripts %}
+            <script type="module" src="{{ asset('js/app.js') }}"></script>
+        {% endblock %}
+    </head>
+    <body class="{% block body_class %}{% endblock %}">
+        {{ include('partials/_flashes.html.twig') }}
+
+        {% block body %}{% endblock %}
+    </body>
+</html>

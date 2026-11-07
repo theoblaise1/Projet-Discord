@@ -1,0 +1,62 @@
+security:
+    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
+    # Les mots de passe sont hachés avec le meilleur algorithme disponible (bcrypt ou argon2).
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+
+    # Les utilisateurs sont chargés depuis la base de données.
+    # Pas de "property" : c'est UserRepository::loadUserByIdentifier() qui est appelé,
+    # ce qui permet de se connecter avec son e-mail OU son nom d'utilisateur.
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+
+    # Un administrateur possède aussi tous les droits d'un membre.
+    role_hierarchy:
+        ROLE_ADMIN: ROLE_USER
+
+    firewalls:
+        dev:
+            # Ensure dev tools and static assets are always allowed
+            pattern: ^/(_profiler(/|$)|(_wdt|assets|build)/)
+            security: false
+        main:
+            lazy: true
+            provider: app_user_provider
+
+            # Connexion par formulaire (route app_login), protégée contre les attaques CSRF
+            form_login:
+                login_path: app_login
+                check_path: app_login
+                enable_csrf: true
+                default_target_path: app_home
+
+            # Déconnexion (route app_logout), puis retour à la page de connexion
+            logout:
+                path: app_logout
+                target: app_login
+
+            # Case "Se souvenir de moi" sur la page de connexion
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800 # 1 semaine, en secondes
+                path: /
+
+    # Note: Only the *first* matching rule is applied
+    access_control:
+        # Pages accessibles sans être connecté
+        - { path: ^/(login|register)$, roles: PUBLIC_ACCESS }
+        # Tout le reste de l'application est réservé aux membres connectés
+        - { path: ^/, roles: ROLE_USER }
+
+when@test:
+    security:
+        password_hashers:
+            # Password hashers are resource-intensive by design to ensure security.
+            # In tests, it's safe to reduce their cost to improve performance.
+            Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+                algorithm: auto
+                cost: 4 # Lowest possible value for bcrypt
+                time_cost: 3 # Lowest possible value for argon
+                memory_cost: 10 # Lowest possible value for argon

@@ -1,0 +1,91 @@
+{% extends 'layout/app.html.twig' %}
+{% import 'partials/_icons.html.twig' as ui %}
+
+{% set current_channel = channel %}
+
+{% block title %}#{{ channel.name }} | {{ app_name }}{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {# Chat en temps réel : envoi en AJAX, rafraîchissement automatique, historique… #}
+    <script type="module" src="{{ asset('js/chat.js') }}"></script>
+{% endblock %}
+
+{% block main %}
+    {% set header_actions %}
+        {% if is_granted('CHANNEL_EDIT', channel) %}
+            <a href="{{ path('app_channel_edit', {id: channel.id}) }}" class="icon-btn" title="Modifier le salon">
+                {{ ui.icon('pencil', 20) }}
+                <span class="sr-only">Modifier le salon</span>
+            </a>
+        {% endif %}
+    {% endset %}
+
+    {{ include('partials/_main_header.html.twig', {
+        title: channel.name,
+        topic: channel.description,
+        actions: header_actions|trim is not empty ? header_actions : null,
+    }) }}
+
+    {# Les attributs data-* sont utilisés par assets/chat.js (rafraîchissement automatique, envoi en AJAX…) #}
+    <section class="chat"
+             data-chat
+             data-messages-url="{{ path('app_message_list', {id: channel.id}) }}"
+             data-home-url="{{ path('app_home') }}">
+
+        <div class="chat__scroller" data-chat-scroller>
+            <div class="chat__inner">
+                {% if has_older_messages %}
+                    <div class="chat__load-more" data-chat-load-more-container>
+                        <button type="button" class="btn btn--secondary btn--small" data-chat-load-more>
+                            Charger les messages précédents
+                        </button>
+                    </div>
+                {% endif %}
+
+                <div class="chat__welcome{{ has_older_messages ? ' is-hidden' }}" data-chat-welcome>
+                    <span class="chat__welcome-icon">{{ ui.icon('hash', 40) }}</span>
+                    <h2 class="chat__welcome-title">Bienvenue dans #{{ channel.name }} !</h2>
+                    <p class="chat__welcome-text">
+                        C'est le début du salon #{{ channel.name }}, créé par
+                        <strong>{{ channel.owner.username }}</strong> le {{ channel.createdAt|date('d/m/Y') }}.
+                        {% if messages is empty %}Sois le premier à écrire un message !{% endif %}
+                    </p>
+                </div>
+
+                <ol class="messages" data-chat-messages>
+                    {{ include('message/_list.html.twig', {messages: messages, previous: null}) }}
+                </ol>
+            </div>
+        </div>
+
+        <footer class="composer">
+            {# "novalidate" : la validation est faite par Symfony (contraintes de l'entité Message) #}
+            {{ form_start(form, {attr: {class: 'composer__form', novalidate: 'novalidate', 'data-chat-form': ''}}) }}
+                {{ form_errors(form) }}
+
+                <div class="composer__box{{ form.content.vars.errors|length > 0 ? ' has-error' }}">
+                    {{ form_label(form.content, null, {label_attr: {class: 'sr-only'}}) }}
+                    {{ form_widget(form.content, {attr: {
+                        class: 'composer__input',
+                        placeholder: 'Envoyer un message dans #' ~ channel.name,
+                        'data-chat-input': '',
+                        'aria-describedby': 'composer-hint',
+                    }}) }}
+                    <button type="submit" class="composer__send" title="Envoyer" data-chat-submit>
+                        {{ ui.icon('send', 20) }}
+                        <span class="sr-only">Envoyer</span>
+                    </button>
+                </div>
+
+                <div class="composer__meta">
+                    <div class="composer__errors" data-chat-errors>{{ form_errors(form.content) }}</div>
+                    <span class="composer__counter" data-chat-counter data-max-length="{{ constant('App\\Entity\\Message::MAX_LENGTH') }}" aria-live="polite"></span>
+                </div>
+                <p class="composer__hint" id="composer-hint">
+                    <kbd>Entrée</kbd> pour envoyer · <kbd>Maj</kbd> + <kbd>Entrée</kbd> pour aller à la ligne
+                </p>
+            {{ form_end(form) }}
+        </footer>
+    </section>
+{% endblock %}

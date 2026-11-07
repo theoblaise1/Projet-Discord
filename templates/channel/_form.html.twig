@@ -1,0 +1,12 @@
+{# Formulaire commun à la création et à la modification d'un salon. Variables : form, button_label, cancel_url #}
+{{ form_start(form, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
+    {{ form_errors(form) }}
+
+    {{ form_row(form.name, {attr: {class: 'field__input field__input--hash'}}) }}
+    {{ form_row(form.description) }}
+
+    <div class="form__actions">
+        <a href="{{ cancel_url }}" class="btn btn--link">Annuler</a>
+        <button type="submit" class="btn btn--primary">{{ button_label }}</button>
+    </div>
+{{ form_end(form) }}

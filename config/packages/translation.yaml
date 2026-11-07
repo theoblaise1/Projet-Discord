@@ -1,0 +1,9 @@
+framework:
+    # L'interface est en français : les messages de validation, de sécurité
+    # ("Identifiants invalides.") et de formulaire sont traduits automatiquement.
+    default_locale: fr
+    enabled_locales: ['fr']
+    translator:
+        default_path: '%kernel.project_dir%/translations'
+        fallbacks: ['fr']
+        providers:

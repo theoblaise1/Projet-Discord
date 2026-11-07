@@ -1,0 +1,26 @@
+
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache/
+###< phpunit/phpunit ###
+
+###> Node.js (non utilisé par le projet, mais à ne jamais versionner) ###
+/node_modules/
+###< Node.js ###
+
+###> Éditeurs et systèmes ###
+/.idea/
+/.vscode/
+.DS_Store
+Thumbs.db
+###< Éditeurs et systèmes ###

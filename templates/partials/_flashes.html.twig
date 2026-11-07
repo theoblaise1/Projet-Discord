@@ -1,0 +1,15 @@
+{# Messages flash (succès, erreurs…) affichés sous forme de notifications #}
+{% set flashes = app.flashes %}
+{% if flashes is not empty %}
+    <div class="toasts" role="status" aria-live="polite">
+        {% for type, messages in flashes %}
+            {% for message in messages %}
+                <div class="toast toast--{{ type }}" data-toast>
+                    <span class="toast__icon" aria-hidden="true">{{ type == 'error' ? '!' : '✓' }}</span>
+                    <p class="toast__text">{{ message }}</p>
+                    <button type="button" class="toast__close" data-toast-close aria-label="Fermer la notification">×</button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+{% endif %}

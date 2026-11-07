@@ -1,0 +1,9 @@
+# Fins de ligne normalisées (LF) dans le dépôt, quel que soit le système
+* text=auto
+
+# Scripts exécutables : toujours LF, sinon "./bin/console" échoue sous Linux/macOS
+bin/* text eol=lf
+
+# Fichiers binaires
+*.ico binary
+*.png binary

@@ -1,0 +1,44 @@
+{#
+    Un message. Variables :
+      - message : le message
+      - grouped : true si le message suit un message du même auteur (avatar et nom masqués)
+
+    L'avatar et l'en-tête sont toujours présents dans le HTML (masqués en CSS pour un
+    message groupé) : si le premier message d'un groupe est supprimé, le suivant peut
+    ainsi reprendre l'en-tête en retirant simplement la classe "message--grouped".
+#}
+{% import 'partials/_icons.html.twig' as ui %}
+
+{% set created_at = message.createdAt %}
+{% set day = created_at|date('Y-m-d') %}
+{% if day == 'now'|date('Y-m-d') %}
+    {% set when = "Aujourd'hui à " ~ created_at|date('H:i') %}
+{% elseif day == '-1 day'|date('Y-m-d') %}
+    {% set when = 'Hier à ' ~ created_at|date('H:i') %}
+{% else %}
+    {% set when = created_at|date('d/m/Y H:i') %}
+{% endif %}
+
+<li class="message{{ grouped ? ' message--grouped' }}" id="message-{{ message.id }}" data-message-id="{{ message.id }}">
+    {{ include('partials/_avatar.html.twig', {user: message.author}) }}
+    <header class="message__header">
+        <span class="message__author">{{ message.author.username }}</span>
+        {% if message.author.admin %}<span class="badge">Admin</span>{% endif %}
+        {% if message.channel.isOwnedBy(message.author) %}<span class="badge badge--owner" title="Créateur du salon">Créateur</span>{% endif %}
+        <time class="message__time" datetime="{{ created_at|date('c') }}">{{ when }}</time>
+    </header>
+    <time class="message__gutter-time" datetime="{{ created_at|date('c') }}" title="{{ when }}" aria-hidden="true">{{ created_at|date('H:i') }}</time>
+
+    <div class="message__content">{{ message.content|nl2br }}</div>
+
+    {% if is_granted('MESSAGE_DELETE', message) %}
+        <form method="post" action="{{ path('app_message_delete', {id: message.id}) }}" class="message__actions"
+              data-confirm="Supprimer ce message ?" data-chat-delete>
+            <input type="hidden" name="_token" value="{{ csrf_token('delete-message') }}">
+            <button type="submit" class="icon-btn icon-btn--danger" title="Supprimer le message">
+                {{ ui.icon('trash', 16) }}
+                <span class="sr-only">Supprimer le message</span>
+            </button>
+        </form>
+    {% endif %}
+</li>

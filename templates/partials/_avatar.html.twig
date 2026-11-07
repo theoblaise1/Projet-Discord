@@ -1,0 +1,2 @@
+{# Avatar rond avec l'initiale du membre. Variables : user, size (facultatif) #}
+<span class="avatar{{ size is defined ? ' avatar--' ~ size }}" style="--avatar-color: {{ user.username|avatar_color }}" aria-hidden="true">{{ user.username|initial }}</span>

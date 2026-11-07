@@ -1,0 +1,41 @@
+{% extends 'layout/auth.html.twig' %}
+
+{% block title %}Connexion | {{ app_name }}{% endblock %}
+
+{% block auth_content %}
+    <h1 class="auth__title">Content de te revoir !</h1>
+    <p class="auth__subtitle">Connecte-toi pour retrouver tes salons.</p>
+
+    {% if error %}
+        <div class="alert alert--error" role="alert">
+            {{ error.messageKey|trans(error.messageData, 'security') }}
+        </div>
+    {% endif %}
+
+    {# Ce formulaire est traité par Symfony (form_login dans config/packages/security.yaml) #}
+    <form method="post" action="{{ path('app_login') }}" class="form">
+        <div class="field">
+            <label for="username" class="field__label">E-mail ou nom d'utilisateur<span class="field__required" aria-hidden="true"> *</span></label>
+            <input type="text" value="{{ last_username }}" name="_username" id="username" class="field__input" autocomplete="username" required autofocus>
+        </div>
+
+        <div class="field">
+            <label for="password" class="field__label">Mot de passe<span class="field__required" aria-hidden="true"> *</span></label>
+            <input type="password" name="_password" id="password" class="field__input" autocomplete="current-password" required>
+        </div>
+
+        <label class="checkbox">
+            <input type="checkbox" name="_remember_me" id="remember_me">
+            <span>Se souvenir de moi</span>
+        </label>
+
+        {# Jeton anti-CSRF vérifié par Symfony (enable_csrf: true) #}
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+        <button type="submit" class="btn btn--primary btn--block">Se connecter</button>
+    </form>
+
+    <p class="auth__switch">
+        Besoin d'un compte ? <a href="{{ path('app_register') }}">S'inscrire</a>
+    </p>
+{% endblock %}

@@ -1,0 +1,9 @@
+# Protection CSRF "classique" : les jetons sont stockés en session.
+# Elle protège tous les formulaires Symfony, la connexion (form_login)
+# et les actions de suppression (jetons générés avec csrf_token()).
+framework:
+    csrf_protection:
+        enabled: true
+    form:
+        csrf_protection:
+            enabled: true

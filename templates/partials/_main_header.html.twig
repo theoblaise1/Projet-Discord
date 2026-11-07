@@ -1,0 +1,23 @@
+{#
+    En-tête de la zone principale. Variables :
+      - title : titre affiché
+      - icon : nom de l'icône (facultatif, "hash" par défaut)
+      - topic : sous-titre / sujet (facultatif)
+    Le bloc "actions" peut être fourni via la variable actions (HTML déjà rendu).
+#}
+{% import 'partials/_icons.html.twig' as ui %}
+<header class="main-header">
+    <button type="button" class="icon-btn main-header__menu" data-sidebar-toggle aria-controls="sidebar" aria-expanded="false" title="Afficher les salons">
+        {{ ui.icon('menu', 24) }}
+        <span class="sr-only">Afficher les salons</span>
+    </button>
+    <span class="main-header__icon">{{ ui.icon(icon|default('hash'), 24) }}</span>
+    <h1 class="main-header__title">{{ title }}</h1>
+    {% if topic|default(null) %}
+        <span class="main-header__divider" aria-hidden="true"></span>
+        <p class="main-header__topic" title="{{ topic }}">{{ topic }}</p>
+    {% endif %}
+    {% if actions|default(null) %}
+        <div class="main-header__actions">{{ actions }}</div>
+    {% endif %}
+</header>

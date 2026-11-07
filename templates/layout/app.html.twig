@@ -1,0 +1,86 @@
+{#
+    Mise en page de l'application (membres connectés) :
+    barre de navigation | liste des salons + profil | contenu de la page.
+
+    Une page peut définir {% set current_channel = channel %} pour mettre
+    en évidence le salon courant dans la liste.
+#}
+{% extends 'base.html.twig' %}
+{% import 'partials/_icons.html.twig' as ui %}
+
+{% set current_channel = current_channel|default(null) %}
+{% set current_route = app.current_route %}
+
+{% block body_class %}page-app{% endblock %}
+
+{% block body %}
+    <div class="app" data-app>
+        <nav class="rail" aria-label="Navigation principale">
+            <a href="{{ path('app_home') }}" class="rail__item rail__item--home{{ current_route == 'app_home' ? ' is-active' }}" title="Accueil">
+                <img src="{{ asset('images/logo.svg') }}" alt="Accueil de {{ app_name }}" width="48" height="48">
+            </a>
+            <span class="rail__separator" aria-hidden="true"></span>
+            <a href="{{ path('app_channel_new') }}" class="rail__item rail__item--action{{ current_route == 'app_channel_new' ? ' is-active' }}" title="Créer un salon">
+                {{ ui.icon('plus', 24) }}
+                <span class="sr-only">Créer un salon</span>
+            </a>
+        </nav>
+
+        <aside class="sidebar" id="sidebar" aria-label="Salons">
+            <header class="sidebar__header">
+                <a href="{{ path('app_home') }}">{{ app_name }}</a>
+            </header>
+
+            <div class="sidebar__body">
+                <div class="sidebar__section">
+                    <span class="sidebar__section-title">Salons textuels</span>
+                    <a href="{{ path('app_channel_new') }}" class="sidebar__section-action" title="Créer un salon">
+                        {{ ui.icon('plus', 16) }}
+                        <span class="sr-only">Créer un salon</span>
+                    </a>
+                </div>
+
+                <ul class="channel-list">
+                    {% for channel in sidebar_channels() %}
+                        {% set is_current = current_channel is not null and current_channel.id == channel.id %}
+                        <li class="channel-list__item{{ is_current ? ' is-active' }}">
+                            <a href="{{ path('app_channel_show', {id: channel.id}) }}" class="channel-list__link"{% if is_current %} aria-current="page"{% endif %}>
+                                {{ ui.icon('hash', 20) }}
+                                <span class="channel-list__name">{{ channel.name }}</span>
+                            </a>
+                            {% if is_granted('CHANNEL_EDIT', channel) %}
+                                <a href="{{ path('app_channel_edit', {id: channel.id}) }}" class="channel-list__settings" title="Modifier le salon #{{ channel.name }}">
+                                    {{ ui.icon('pencil', 16) }}
+                                    <span class="sr-only">Modifier le salon #{{ channel.name }}</span>
+                                </a>
+                            {% endif %}
+                        </li>
+                    {% else %}
+                        <li class="channel-list__empty">
+                            Aucun salon pour le moment.
+                            <a href="{{ path('app_channel_new') }}">Créer le premier</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <footer class="user-panel">
+                {{ include('partials/_avatar.html.twig', {user: app.user}) }}
+                <div class="user-panel__info">
+                    <span class="user-panel__name">{{ app.user.username }}</span>
+                    <span class="user-panel__status">{{ app.user.admin ? 'Administrateur' : 'En ligne' }}</span>
+                </div>
+                <a href="{{ path('app_logout') }}" class="icon-btn" title="Se déconnecter">
+                    {{ ui.icon('logout', 20) }}
+                    <span class="sr-only">Se déconnecter</span>
+                </a>
+            </footer>
+        </aside>
+
+        <div class="sidebar-backdrop" data-sidebar-close aria-hidden="true"></div>
+
+        <main class="main" id="main">
+            {% block main %}{% endblock %}
+        </main>
+    </div>
+{% endblock %}

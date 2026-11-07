@@ -1,0 +1,25 @@
+{% extends 'layout/auth.html.twig' %}
+
+{% block title %}Inscription | {{ app_name }}{% endblock %}
+
+{% block auth_content %}
+    <h1 class="auth__title">Créer un compte</h1>
+    <p class="auth__subtitle">Rejoins la discussion en quelques secondes.</p>
+
+    {# "novalidate" désactive la validation du navigateur : ce sont les contraintes
+       Symfony (entité User + RegistrationFormType) qui affichent les erreurs. #}
+    {{ form_start(registrationForm, {attr: {class: 'form', novalidate: 'novalidate'}}) }}
+        {{ form_errors(registrationForm) }}
+
+        {{ form_row(registrationForm.email) }}
+        {{ form_row(registrationForm.username) }}
+        {{ form_row(registrationForm.plainPassword.first) }}
+        {{ form_row(registrationForm.plainPassword.second) }}
+
+        <button type="submit" class="btn btn--primary btn--block">Créer mon compte</button>
+    {{ form_end(registrationForm) }}
+
+    <p class="auth__switch">
+        Tu as déjà un compte ? <a href="{{ path('app_login') }}">Se connecter</a>
+    </p>
+{% endblock %}
