@@ -43,7 +43,7 @@ Le CSS et le JavaScript sont de simples fichiers dans `public/`.
 ## Installation rapide (SQLite, sans configuration)
 
 ```bash
-git clone <URL-du-depot> symcord
+git clone https://github.com/theoblaise1/Synfony-Discord.git symcord
 cd symcord
 composer install
 composer setup
